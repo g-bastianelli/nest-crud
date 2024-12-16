@@ -4,13 +4,16 @@ import * as schema from './database.schema';
 import { InjectDatabase } from './database.decorator';
 import { DatabaseType } from './database.types';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
+import { join } from 'path';
 
 @Injectable()
 class DatabaseService implements OnModuleInit {
   constructor(@InjectDatabase() private readonly db: DatabaseType) {}
 
   async onModuleInit() {
-    await migrate(this.db, { migrationsFolder: './db/migrations' });
+    await migrate(this.db, {
+      migrationsFolder: join(__dirname, '/migrations'),
+    });
     await reset(this.db, schema);
     await seed(this.db, schema).refine((f) => ({
       users: {

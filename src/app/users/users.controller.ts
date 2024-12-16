@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { TsRestException, tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 import { usersContract } from './users.contract';
-import { DatabaseType, InjectDatabase } from 'db';
+import { DatabaseType, InjectDatabase } from 'src/db';
 
 @Controller()
 class UsersController {
@@ -25,6 +25,17 @@ class UsersController {
       return {
         status: 200,
         body: user,
+      };
+    });
+  }
+
+  @TsRestHandler(usersContract.listUsers)
+  listUsers() {
+    return tsRestHandler(usersContract.listUsers, async () => {
+      const users = await this.db.query.users.findMany();
+      return {
+        status: 200,
+        body: users,
       };
     });
   }
