@@ -1,0 +1,15 @@
+services:
+  main:
+    container_name: test-crud
+    build:
+      context: .
+    ports:
+      - "3000:3000"
+    networks:
+      - test-crud-network
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+
+networks:
+  test-crud-network:
