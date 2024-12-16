@@ -1,8 +1,7 @@
 import { Controller } from '@nestjs/common';
 import { TsRestException, tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 import { usersContract } from './users.contract';
-import { eq } from 'drizzle-orm';
-import { DatabaseType, InjectDatabase, schema } from 'db';
+import { DatabaseType, InjectDatabase } from 'db';
 
 @Controller()
 class UsersController {
@@ -11,10 +10,9 @@ class UsersController {
   @TsRestHandler(usersContract.getUser)
   getUser() {
     return tsRestHandler(usersContract.getUser, async ({ params: { id } }) => {
-      const [user] = await this.db
-        .select()
-        .from(schema.users)
-        .where(eq(schema.users.id, id));
+      const user = await this.db.query.users.findFirst({
+        where: (useer, { eq }) => eq(useer.id, id),
+      });
       if (!user) {
         throw new TsRestException(usersContract.createUser, {
           status: 404,
