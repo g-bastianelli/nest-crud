@@ -10,6 +10,20 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=production
+    depends_on:
+      - postgres
+
+  postgres:
+    container_name: test-crud-postgres
+    image: postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - test-crud-network
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=localpass2020
 
 networks:
   test-crud-network:
