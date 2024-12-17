@@ -51,6 +51,26 @@ class UsersController {
       },
     );
   }
+
+  @TsRestHandler(usersContract.createUser)
+  createUser() {
+    return tsRestHandler(usersContract.createUser, async ({ body }) => {
+      const user = await this.usersService.createUser(body);
+      if (!user) {
+        throw new TsRestException(usersContract.createUser, {
+          status: 409,
+          body: {
+            code: 'USER_ALREADY_EXISTS',
+            message: 'User already exists',
+          },
+        });
+      }
+      return {
+        status: 201,
+        body: user,
+      };
+    });
+  }
 }
 
 export { UsersController };

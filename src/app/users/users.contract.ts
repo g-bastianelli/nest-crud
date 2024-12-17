@@ -16,10 +16,12 @@ const usersContract = c.router({
     method: 'POST',
     path: '/users',
     responses: {
-      201: userSchema,
+      201: z.object({
+        id: z.string().uuid(),
+      }),
     },
     body: z.object({
-      name: z.string(),
+      name: z.string().min(10),
       email: z.string().email(),
     }),
     summary: 'Create a user',
@@ -44,7 +46,13 @@ const usersContract = c.router({
     }),
     responses: {
       200: z.object({
-        users: z.array(userSchema),
+        users: z.array(
+          z.object({
+            id: z.string().uuid(),
+            name: z.string(),
+            email: z.string().email(),
+          }),
+        ),
         pagination: paginationResponseSchema,
       }),
     },

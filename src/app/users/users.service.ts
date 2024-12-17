@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DatabaseType, InjectDatabase, schema } from '../../db';
-import { eq, sql } from 'drizzle-orm';
+import { eq, InferInsertModel, sql } from 'drizzle-orm';
 
 @Injectable()
 export class UsersService {
@@ -48,5 +48,22 @@ export class UsersService {
       offset: (page - 1) * pageSize,
       orderBy: (user, { asc }) => asc(user.name),
     });
+  }
+
+  async createUser(newUser: InferInsertModel<typeof schema.users>) {
+    const [user] = await this.createUsersQuery([newUser]);
+    return user;
+  }
+
+  private createUsersQuery(users: InferInsertModel<typeof schema.users>[]) {
+    return this.db
+      .insert(schema.users)
+      .values(users)
+      .onConflictDoNothing({
+        target: schema.users.email,
+      })
+      .returning({
+        id: schema.users.id,
+      });
   }
 }
