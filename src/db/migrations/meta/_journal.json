@@ -8,6 +8,13 @@
       "when": 1734388557692,
       "tag": "0000_milky_strong_guy",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1734474496226,
+      "tag": "0001_curious_the_enforcers",
+      "breakpoints": true
     }
   ]
 }
