@@ -1,6 +1,9 @@
 import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
-import { paginationResponseSchema } from '../utils/pagination.utils';
+import {
+  paginationQuerySchema,
+  paginationResponseSchema,
+} from '../utils/pagination.utils';
 
 const userSchema = z.object({
   id: z.string().uuid(),
@@ -28,9 +31,9 @@ const usersContract = c.router({
   },
   getUser: {
     method: 'GET',
-    path: `/users/:id`,
+    path: `/users/:userId`,
     pathParams: z.object({
-      id: z.string().uuid(),
+      userId: z.string().uuid(),
     }),
     responses: {
       200: userSchema.nullable(),
@@ -40,10 +43,7 @@ const usersContract = c.router({
   listUsers: {
     method: 'GET',
     path: '/users',
-    query: z.object({
-      page: z.coerce.number().min(1).default(1),
-      pageSize: z.coerce.number().min(1).max(100).default(10),
-    }),
+    query: paginationQuerySchema,
     responses: {
       200: z.object({
         users: z.array(

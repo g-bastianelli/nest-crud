@@ -11,8 +11,6 @@ import { TEST_CRUD_DB } from './database.consts';
       provide: TEST_CRUD_DB,
       inject: [ConfigService],
       useFactory: async (config: ConfigService) => {
-        //TODO GBA remove ⬇
-        console.log(config.get('DATABASE_URL'));
         return drizzle(config.get('DATABASE_URL'), { schema });
       },
     },

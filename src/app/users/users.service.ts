@@ -1,10 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseType, InjectDatabase, schema } from '../../db';
+import { DatabaseType, InjectDatabase, schema } from '@db';
 import { eq, InferInsertModel, sql } from 'drizzle-orm';
 
 @Injectable()
 export class UsersService {
   constructor(@InjectDatabase() private readonly db: DatabaseType) {}
+
+  async createUser(newUser: InferInsertModel<typeof schema.users>) {
+    const [user] = await this.createUsersQuery([newUser]);
+    return user;
+  }
 
   async getUserByIdWithClaimsTotal(userId: string) {
     const [user] = await this.getUserWithClaimsTotalQuery(userId);
@@ -25,6 +30,18 @@ export class UsersService {
         count: sql<number>`count(*)`,
       })
       .from(schema.users);
+  }
+
+  private createUsersQuery(users: InferInsertModel<typeof schema.users>[]) {
+    return this.db
+      .insert(schema.users)
+      .values(users)
+      .onConflictDoNothing({
+        target: schema.users.email,
+      })
+      .returning({
+        id: schema.users.id,
+      });
   }
 
   private getUserWithClaimsTotalQuery(userId: string) {
@@ -48,22 +65,5 @@ export class UsersService {
       offset: (page - 1) * pageSize,
       orderBy: (user, { asc }) => asc(user.name),
     });
-  }
-
-  async createUser(newUser: InferInsertModel<typeof schema.users>) {
-    const [user] = await this.createUsersQuery([newUser]);
-    return user;
-  }
-
-  private createUsersQuery(users: InferInsertModel<typeof schema.users>[]) {
-    return this.db
-      .insert(schema.users)
-      .values(users)
-      .onConflictDoNothing({
-        target: schema.users.email,
-      })
-      .returning({
-        id: schema.users.id,
-      });
   }
 }

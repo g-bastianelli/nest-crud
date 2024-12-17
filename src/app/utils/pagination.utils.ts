@@ -7,6 +7,11 @@ const paginationResponseSchema = z.object({
   nextPage: z.string().nullable(),
 });
 
+const paginationQuerySchema = z.object({
+  page: z.coerce.number().default(1),
+  pageSize: z.coerce.number().default(10),
+});
+
 function buildPaginationResponse(
   request: Request,
   { page, pageSize, total }: { page: number; pageSize: number; total: number },
@@ -19,4 +24,8 @@ function buildPaginationResponse(
   return { page, pageSize, total, nextPage };
 }
 
-export { paginationResponseSchema, buildPaginationResponse };
+export {
+  paginationResponseSchema,
+  paginationQuerySchema,
+  buildPaginationResponse,
+};

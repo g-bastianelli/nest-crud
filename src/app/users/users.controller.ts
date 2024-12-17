@@ -10,22 +10,25 @@ class UsersController {
 
   @TsRestHandler(usersContract.getUser)
   getUser() {
-    return tsRestHandler(usersContract.getUser, async ({ params: { id } }) => {
-      const user = await this.usersService.getUserByIdWithClaimsTotal(id);
-      if (!user) {
-        throw new TsRestException(usersContract.createUser, {
-          status: 404,
-          body: {
-            code: 'USER_NOT_FOUND',
-            message: 'User not found',
-          },
-        });
-      }
-      return {
-        status: 200,
-        body: user,
-      };
-    });
+    return tsRestHandler(
+      usersContract.getUser,
+      async ({ params: { userId } }) => {
+        const user = await this.usersService.getUserByIdWithClaimsTotal(userId);
+        if (!user) {
+          throw new TsRestException(usersContract.createUser, {
+            status: 404,
+            body: {
+              code: 'USER_NOT_FOUND',
+              message: 'User not found',
+            },
+          });
+        }
+        return {
+          status: 200,
+          body: user,
+        };
+      },
+    );
   }
 
   @TsRestHandler(usersContract.listUsers)
