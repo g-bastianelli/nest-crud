@@ -1,18 +1,17 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Req } from '@nestjs/common';
 import { TsRestException, tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 import { usersContract } from './users.contract';
-import { DatabaseType, InjectDatabase } from 'src/db';
+import { UsersService } from './users.service';
+import { buildPaginationResponse } from '../utils/pagination.utils';
 
 @Controller()
 class UsersController {
-  constructor(@InjectDatabase() private readonly db: DatabaseType) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @TsRestHandler(usersContract.getUser)
   getUser() {
     return tsRestHandler(usersContract.getUser, async ({ params: { id } }) => {
-      const user = await this.db.query.users.findFirst({
-        where: (useer, { eq }) => eq(useer.id, id),
-      });
+      const user = await this.usersService.getUserByIdWithClaimsTotal(id);
       if (!user) {
         throw new TsRestException(usersContract.createUser, {
           status: 404,
@@ -30,14 +29,27 @@ class UsersController {
   }
 
   @TsRestHandler(usersContract.listUsers)
-  listUsers() {
-    return tsRestHandler(usersContract.listUsers, async () => {
-      const users = await this.db.query.users.findMany();
-      return {
-        status: 200,
-        body: users,
-      };
-    });
+  listUsers(@Req() request: Request) {
+    return tsRestHandler(
+      usersContract.listUsers,
+      async ({ query: { page, pageSize } }) => {
+        const { users, total } = await this.usersService.listUsers(
+          page,
+          pageSize,
+        );
+        return {
+          status: 200,
+          body: {
+            users,
+            pagination: buildPaginationResponse(request, {
+              page,
+              pageSize,
+              total,
+            }),
+          },
+        };
+      },
+    );
   }
 }
 

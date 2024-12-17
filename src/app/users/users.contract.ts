@@ -1,10 +1,12 @@
 import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
+import { paginationResponseSchema } from '../utils/pagination.utils';
 
 const userSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
   email: z.string().email(),
+  claimsTotal: z.number(),
 });
 
 const c = initContract();
@@ -36,8 +38,15 @@ const usersContract = c.router({
   listUsers: {
     method: 'GET',
     path: '/users',
+    query: z.object({
+      page: z.coerce.number().min(1).default(1),
+      pageSize: z.coerce.number().min(1).max(100).default(10),
+    }),
     responses: {
-      200: z.array(userSchema),
+      200: z.object({
+        users: z.array(userSchema),
+        pagination: paginationResponseSchema,
+      }),
     },
     summary: 'List all users',
   },

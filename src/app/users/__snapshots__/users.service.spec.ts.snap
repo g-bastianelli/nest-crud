@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`countUsersQuery should generate the right query 1`] = `
+{
+  "params": [],
+  "sql": "select count(*) from "users"",
+}
+`;
+
+exports[`getUserWithClaimsTotalQuery should generate the right query  1`] = `
+{
+  "params": [
+    "1",
+    1,
+  ],
+  "sql": "select "users"."id", "users"."name", "users"."email", sum("claims"."value") from "users" inner join "claims" on "claims"."userId" = "users"."id" where "users"."id" = $1 group by "users"."id" limit $2",
+}
+`;
+
+exports[`listUsersQuery should generate the right query 1`] = `
+{
+  "params": [
+    1000,
+    21000,
+  ],
+  "sql": "select "id", "name", "email" from "users" order by "users"."name" asc limit $1 offset $2",
+  "typings": [
+    "none",
+    "none",
+  ],
+}
+`;
