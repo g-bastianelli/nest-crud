@@ -1,15 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { eq, InferInsertModel, sql } from 'drizzle-orm';
-import { DatabaseType, InjectDatabase, schema } from '@db';
+import { CreateClaimsRequestBody } from './claims.contract';
+import { DatabaseType, InjectDatabase, schema } from '../../../db';
 
 @Injectable()
 class UserClaimsService {
   constructor(@InjectDatabase() private readonly db: DatabaseType) {}
 
-  createClaims(claims: InferInsertModel<typeof schema.claims>[]) {
-    return this.db.insert(schema.claims).values(claims).returning({
-      id: schema.claims.id,
+  createClaims(userId: string, claimsToCreate: CreateClaimsRequestBody) {
+    const user = this.db.query.users.findFirst({
+      where: (user, { eq }) => eq(user.id, userId),
     });
+    if (!user) {
+      return null;
+    }
+
+    return this.createClaimsQuery(
+      claimsToCreate.map((claim) => ({ ...claim, userId })),
+    );
   }
 
   async listClaims(userId: string, page: number, pageSize: number) {
@@ -27,6 +35,12 @@ class UserClaimsService {
       })
       .from(schema.claims)
       .where(eq(schema.claims.userId, userId));
+  }
+
+  private createClaimsQuery(claims: InferInsertModel<typeof schema.claims>[]) {
+    return this.db.insert(schema.claims).values(claims).returning({
+      id: schema.claims.id,
+    });
   }
 
   private listClaimsQuery(userId: string, page: number, pageSize: number) {

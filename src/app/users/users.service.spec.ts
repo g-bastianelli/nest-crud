@@ -1,7 +1,7 @@
 import { describe } from 'node:test';
 import { UsersService } from './users.service';
 import { drizzle } from 'drizzle-orm/node-postgres';
-import { schema } from '@db';
+import { schema } from '../../db';
 
 describe('UsersService', () => {
   const usersService = new UsersService(drizzle('mock', { schema }));

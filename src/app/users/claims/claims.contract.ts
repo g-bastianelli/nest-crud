@@ -7,6 +7,16 @@ import { z } from 'zod';
 
 const c = initContract();
 
+const createClaimsRequestBodySchema = z.array(
+  z.object({
+    title: z.string(),
+    description: z.string(),
+    value: z.number(),
+  }),
+);
+
+type CreateClaimsRequestBody = z.infer<typeof createClaimsRequestBodySchema>;
+
 const userClaimsContract = c.router({
   listUserClaims: {
     method: 'GET',
@@ -36,13 +46,7 @@ const userClaimsContract = c.router({
     pathParams: z.object({
       userId: z.string().uuid(),
     }),
-    body: z.array(
-      z.object({
-        title: z.string(),
-        description: z.string(),
-        value: z.number(),
-      }),
-    ),
+    body: createClaimsRequestBodySchema,
     responses: {
       201: z.object({
         claims: z.array(
@@ -68,4 +72,4 @@ const userClaimsContract = c.router({
   },
 });
 
-export { userClaimsContract };
+export { userClaimsContract, CreateClaimsRequestBody };

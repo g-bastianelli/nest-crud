@@ -38,12 +38,16 @@ class UserClaimsController {
     return tsRestHandler(
       userClaimsContract.batchCreateClaims,
       async ({ params: { userId }, body }) => {
-        const claims = await this.userClaimsService.createClaims(
-          body.map((claim) => ({
-            ...claim,
-            userId,
-          })),
-        );
+        const claims = await this.userClaimsService.createClaims(userId, body);
+        if (!claims) {
+          return {
+            status: 400,
+            body: {
+              message: 'User not found',
+            },
+          };
+        }
+
         return {
           status: 200,
           body: claims,

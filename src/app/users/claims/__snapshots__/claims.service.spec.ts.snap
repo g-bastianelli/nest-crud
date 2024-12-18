@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`countClaimsQuery should generate the right query 1`] = `
+{
+  "params": [
+    "1",
+  ],
+  "sql": "select count(*) from "claims" where "claims"."userId" = $1",
+}
+`;
+
+exports[`createClaimsQuery should generate the right query 1`] = `
+{
+  "params": [
+    "uuid",
+    "title",
+    "description",
+    1,
+  ],
+  "sql": "insert into "claims" ("id", "userId", "title", "description", "value") values (default, $1, $2, $3, $4) returning "id"",
+}
+`;
+
+exports[`listClaimsQuery should generate the right query 1`] = `
+{
+  "params": [
+    "1",
+    10,
+  ],
+  "sql": "select "id", "title", "description", "value" from "claims" where "claims"."userId" = $1 order by "claims"."value" desc limit $2",
+  "typings": [
+    "uuid",
+    "none",
+  ],
+}
+`;

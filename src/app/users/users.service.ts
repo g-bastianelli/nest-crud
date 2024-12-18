@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { DatabaseType, InjectDatabase, schema } from '@db';
 import { eq, InferInsertModel, sql } from 'drizzle-orm';
+import { DatabaseType, InjectDatabase, schema } from '../../db';
 
 @Injectable()
 export class UsersService {
@@ -53,7 +53,7 @@ export class UsersService {
         claimsTotal: sql<number>`sum(${schema.claims.value})`,
       })
       .from(schema.users)
-      .innerJoin(schema.claims, eq(schema.claims.userId, schema.users.id))
+      .leftJoin(schema.claims, eq(schema.claims.userId, schema.users.id))
       .where(eq(schema.users.id, userId))
       .groupBy(schema.users.id)
       .limit(1);
