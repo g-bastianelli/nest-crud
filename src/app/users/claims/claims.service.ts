@@ -7,8 +7,8 @@ import { DatabaseType, InjectDatabase, schema } from '../../../db';
 class UserClaimsService {
   constructor(@InjectDatabase() private readonly db: DatabaseType) {}
 
-  createClaims(userId: string, claimsToCreate: CreateClaimsRequestBody) {
-    const user = this.db.query.users.findFirst({
+  async createClaims(userId: string, claimsToCreate: CreateClaimsRequestBody) {
+    const user = await this.db.query.users.findFirst({
       where: (user, { eq }) => eq(user.id, userId),
     });
     if (!user) {
