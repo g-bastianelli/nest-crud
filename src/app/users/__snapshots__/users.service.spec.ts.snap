@@ -13,7 +13,7 @@ exports[`getUserWithClaimsTotalQuery should generate the right query  1`] = `
     "1",
     1,
   ],
-  "sql": "select "users"."id", "users"."name", "users"."email", sum("claims"."value") from "users" left join "claims" on "claims"."userId" = "users"."id" where "users"."id" = $1 group by "users"."id" limit $2",
+  "sql": "select "users"."id", "users"."name", "users"."email", coalesce(sum("claims"."value"),0) from "users" left join "claims" on "claims"."userId" = "users"."id" where "users"."id" = $1 group by "users"."id" limit $2",
 }
 `;
 

@@ -50,7 +50,8 @@ export class UsersService {
         id: schema.users.id,
         name: schema.users.name,
         email: schema.users.email,
-        claimsTotal: sql<number>`sum(${schema.claims.value})`,
+        claimsTotal:
+          sql<number>`coalesce(sum(${schema.claims.value}),0)`.mapWith(Number),
       })
       .from(schema.users)
       .leftJoin(schema.claims, eq(schema.claims.userId, schema.users.id))
